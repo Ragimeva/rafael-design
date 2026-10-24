@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rafael Giovanni Meléndez Vallejo | Portafolio</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background-color: #030305; color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .city-bg-wrapper {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      overflow: hidden; z-index: 1; pointer-events: none;
+      background-color: #030305;
+    }
+    .city-real-bg {
+      position: absolute; top: -10%; left: -10%; width: 120vw; height: 120vh;
+      background: linear-gradient(to bottom, rgba(3, 3, 5, 0.85) 0%, rgba(12, 10, 8, 0.40) 40%, rgba(8, 6, 12, 0.85) 100%),
+                  url('https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=2500&auto=format&fit=crop') no-repeat center center/cover;
+      filter: sepia(0.35) brightness(0.9) contrast(1.1);
+      opacity: 0.85;
+      will-change: transform; transform: translate3d(0, 0, 0) scale(1.1);
+    }
+
+    #lampCanvas {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 2;
+    }
+
+    header {
+      position: fixed; top: 0; left: 0; width: 100%; padding: 25px 40px;
+      display: flex; justify-content: space-between; align-items: center; z-index: 30;
+      background: transparent; border: none; box-shadow: none; gap: 20px;
+    }
+    header * { pointer-events: auto; }
+
+    .header-left {
+      display: flex; align-items: center; gap: 25px;
+    }
+
+    .logo-link {
+      display: inline-block; text-decoration: none; cursor: pointer; flex-shrink: 0; position: relative;
+    }
+
+    .site-logo {
+      height: 170px; width: auto; display: block;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+      transition: transform 0.4s ease, filter 0.4s ease, drop-shadow 0.4s ease;
+    }
+
+    .logo-link:hover .site-logo, .site-logo.illuminated {
+      transform: scale(1.06);
+      filter: drop-shadow(0 0 35px rgba(255, 225, 170, 0.95)) 
+              drop-shadow(0 0 12px rgba(255, 200, 120, 0.8)) 
+              brightness(1.5) contrast(1.15);
+    }
+
+    .logo-slogan {
+      font-size: 0.9rem; font-weight: 500; letter-spacing: 1.2px; color: #ffffff;
+      text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.95); font-style: italic;
+    }
+
+    nav ul { display: flex; list-style: none; gap: 25px; }
+    nav button {
+      background: none; border: none; color: #ffffff; font-size: 0.95rem; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      transition: color 0.3s ease; text-shadow: 0 3px 12px rgba(0,0,0,0.95);
+      padding: 0 0 4px 0; font-family: inherit; border-bottom: 2px solid transparent;
+    }
+    nav button:hover, nav button.active { color: #ffddaa; border-bottom: 2px solid #ffddaa; }
+
+    .floating-contact {
+      position: fixed; bottom: 30px; right: 40px; z-index: 30;
+      display: flex; flex-direction: column; gap: 6px; align-items: flex-end; pointer-events: auto;
+    }
+    .contact-link {
+      color: #ffffff; text-decoration: none; font-size: 0.95rem; font-weight: 600;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95); transition: color 0.3s ease;
+      background: transparent; padding: 0; border: none; cursor: pointer; text-align: right;
+    }
+    .contact-link:hover { color: #ffddaa; }
+
+    main { margin-top: 190px; position: relative; z-index: 10; }
+
+    .section {
+      display: none; max-width: 1000px; margin: 0 auto; padding: 0px 30px 40px;
+      opacity: 0; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .section.active { display: block; opacity: 1; transform: translateY(0); }
+
+    #projects { padding-top: 0px; overflow-x: hidden; width: 100%; }
+
+    #about p { margin-bottom: 16px; line-height: 1.55; }
+    #trajectory h2 { margin-bottom: 30px; }
+    #trajectory p { margin-bottom: 22px; line-height: 1.6; }
+
+    h1 { font-size: 2.8rem; margin-bottom: 15px; color: #ffffff; font-weight: 700; text-shadow: 0 4px 25px rgba(0,0,0,1); }
+    h2 { font-size: 2rem; margin-bottom: 6px; color: #ffffff; font-weight: 700; text-shadow: 0 3px 20px rgba(0,0,0,1); }
+    p { line-height: 1.5; color: #e0e0e0; margin-bottom: 10px; font-size: 1rem; text-shadow: 0 2px 14px rgba(0,0,0,1); }
+
+    .lamp-hint {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 12px;
+      padding: 6px 14px; background: rgba(255, 221, 170, 0.05);
+      border: 1px solid rgba(255, 221, 170, 0.2); border-radius: 20px;
+      font-size: 0.85rem; color: #ffddaa; letter-spacing: 0.5px;
+    }
+    .lamp-hint svg { width: 16px; height: 16px; fill: none; stroke: #ffddaa; stroke-width: 1.8; }
+
+    .art-illustration-box {
+      width: 100%; max-width: 100%; height: 185px; margin: 10px 0 26px 0; overflow: hidden; background: transparent;
+    }
+    .art-illustration-box svg { width: 100%; height: 100%; display: block; }
+
+    .info-container-bottom { background: transparent; border: none; border-radius: 0; padding: 0; margin-top: 20px; }
+    .info-container-bottom h3 {
+      font-size: 1.25rem; color: #ffddaa; margin-bottom: 6px; font-weight: 600; text-shadow: 0 3px 20px rgba(0,0,0,1);
+    }
+
+    .folder-title {
+      font-size: 1.3rem; color: #ffddaa; margin: 20px 0 10px;
+      border: none !important; background: transparent !important; padding-bottom: 0; 
+      font-weight: 600; text-shadow: 0 3px 15px rgba(0,0,0,0.95);
+    }
+
+    .gallery-viewport {
+      max-height: 48vh;
+      overflow-y: auto;
+      padding-right: 15px;
+      margin-bottom: 20px;
+      background: transparent !important;
+      border: none !important; outline: none !important; box-shadow: none !important;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 221, 170, 0.4) transparent;
+    }
+    .gallery-viewport::-webkit-scrollbar { width: 6px; }
+    .gallery-viewport::-webkit-scrollbar-thumb { background: rgba(255, 221, 170, 0.4); border-radius: 3px; }
+
+    .photo-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: flex-start;
+      align-items: stretch;
+      margin: 0; padding: 0;
+      background: transparent !important;
+      border: none !important; box-shadow: none !important;
+    }
+    
+    .photo-gallery img {
+      flex: 1 1 160px;
+      max-width: 210px;
+      height: 170px; 
+      object-fit: cover; 
+      display: block; 
+      background: transparent !important;
+      border: none !important; box-shadow: none !important; outline: none !important;
+      cursor: pointer; transition: transform 0.3s ease;
+      filter: brightness(1.15) contrast(1.05);
+    }
+    .photo-gallery img:hover { transform: scale(1.04); }
+
+    .lightbox {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: transparent !important; background-color: rgba(0,0,0,0.85);
+      z-index: 100; justify-content: center; align-items: center; cursor: pointer;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .lightbox.active { display: flex; opacity: 1; }
+    
+    #smokeCanvas {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 105;
+    }
+
+    .lightbox img {
+      position: relative; z-index: 102; max-width: 90vw; max-height: 88vh;
+      border-radius: 0; opacity: 0; transform: scale(0.95);
+      transition: opacity 0.4s ease, transform 0.4s ease; 
+      background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important;
+    }
+    .lightbox.active img { opacity: 1; transform: scale(1); }
+
+    /* ========================================================
+       ADAPTACIONES RESPONSIVAS PARA MÓVIL (VERTICAL Y HORIZONTAL)
+       ======================================================== */
+    @media (max-width: 900px) {
+      header {
+        padding: 8px 12px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+      }
+      .header-left {
+        gap: 8px;
+      }
+      .site-logo {
+        height: 75px;
+      }
+      .logo-slogan {
+        display: none;
+      }
+      nav ul {
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      nav button {
+        font-size: 0.68rem;
+        letter-spacing: 0.3px;
+        padding-bottom: 2px;
+      }
+      main {
+        margin-top: 90px;
+      }
+      .section {
+        padding: 0 15px 110px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 221, 170, 0.3) transparent;
+      }
+      .section::-webkit-scrollbar { width: 4px; }
+      .section::-webkit-scrollbar-thumb { background: rgba(255, 221, 170, 0.3); border-radius: 2px; }
+
+      h1 {
+        font-size: 1.25rem;
+        margin-bottom: 6px;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+      }
+      p {
+        font-size: 0.83rem;
+        margin-bottom: 6px;
+      }
+      .gallery-viewport {
+        max-height: 50vh;
+        padding-right: 5px;
+      }
+      .photo-gallery {
+        gap: 8px;
+      }
+      .photo-gallery img {
+        flex: 1 1 30%;
+        max-width: 31%;
+        height: 90px;
+      }
+      .floating-contact {
+        bottom: 12px;
+        right: 15px;
+        gap: 3px;
+        background: transparent !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      .contact-link {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 900px) and (orientation: landscape) {
+      header {
+        padding: 6px 12px;
+      }
+      .site-logo {
+        height: 52px;
+      }
+      main {
+        margin-top: 65px;
+      }
+      .section {
+        max-height: calc(100vh - 75px);
+        padding-bottom: 85px;
+      }
+      .gallery-viewport {
+        max-height: 40vh;
+      }
+      .photo-gallery img {
+        flex: 1 1 18%;
+        max-width: 19%;
+        height: 68px;
+      }
+      .floating-contact {
+        bottom: 8px;
+        background: transparent !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="city-bg-wrapper"><div class="city-real-bg" id="cityBg"></div></div>
+  <canvas id="lampCanvas"></canvas>
+
+  <header>
+    <div class="header-left">
+      <a href="#" onclick="switchSection('about'); return false;" class="logo-link" title="Ir al inicio">
+        <img src="IMG/logo.png" alt="Rafael Design Logo" class="site-logo">
+      </a>
+      <div class="logo-slogan">"Lámpara es a mis pies tu palabra y lumbrera a mi camino"</div>
+    </div>
+    <nav>
+      <ul>
+        <li><button onclick="switchSection('about')" class="nav-btn active" data-section="about">Acerca</button></li>
+        <li><button onclick="switchSection('trajectory')" class="nav-btn" data-section="trajectory">Trayectoria</button></li>
+        <li><button onclick="switchSection('gallery')" class="nav-btn" data-section="gallery">Galería</button></li>
+        <li><button onclick="switchSection('projects')" class="nav-btn" data-section="projects">Proyectos</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="about" class="section active">
+      <h1>Rafael Giovani Meléndez Vallejo</h1>
+      <p style="font-size: 1.05rem; color: #ffddaa; font-weight: 600; margin-bottom: 10px;">Diseñador Gráfico & Creador Visual</p>
+      <p>Bienvenido a mi espacio profesional. Como diseñador gráfico con una amplia trayectoria consolidada, me especializo en transformar ideas complejas en piezas visuales de alto impacto, combinando criterio estético, precisión técnica y una sólida estrategia conceptual.</p>
+      <p>Mi bagaje abarca tanto la elegancia técnica del diseño impreso como la versatilidad del entorno digital. Cuento con extensa experiencia en el desarrollo integral de identidades corporativas y diseño de marcas, así como en la creación de material editorial, folletería fina, catálogos, artículos promocionales y merchandising.</p>
+      <p>Cada proyecto es abordado con absoluta dedicación al detalle: desde el equilibrio de la tipografía y el color hasta la coherencia gráfica que hace destacar a cualquier marca en soporte físico o digital.</p>
+    </section>
+
+    <section id="trajectory" class="section">
+      <h2>Trayectoria Profesional</h2>
+      <p>A lo largo de más de una década de experiencia continua en el ámbito gráfico y visual, he liderado proyectos de branding, sistemas de identidad visual y estrategias creativas para marcas institucionales y comerciales.</p>
+      <p>Mi enfoque integral combina la dirección de arte, la tipografía avanzada y la producción impresa técnica con soluciones digitales contemporáneas. A lo largo de mi trayectoria he coordinado procesos creativos desde la fase conceptual inicial hasta el arte final y salida a imprenta o publicación digital.</p>
+      <p>Especializado en crear narrativas gráficas perdurables, mi trabajo se distingue por la atención rigurosa a la composición, el uso estratégico del color y el equilibrio estético que demanda el mercado actual.</p>
+    </section>
+
+    <section id="gallery" class="section">
+      <h2>Galería de Trabajos</h2>
+      
+      <div class="lamp-hint">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2v3M9 8h6m-5 0l-1 7h8l-1-7M10 15h4m-3 3h2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Desliza el dedo o el faro sobre la galería para mover el scroll</span>
+      </div>
+
+      <div class="gallery-viewport" id="galleryViewport">
+        <h3 class="folder-title">Composición Minimalista</h3>
+        <div class="photo-gallery" id="gallery-minimalista"></div>
+
+        <h3 class="folder-title">Exploración Tipográfica</h3>
+        <div class="photo-gallery" id="gallery-tipografica"></div>
+
+        <h3 class="folder-title">Ilustración Digital</h3>
+        <div class="photo-gallery" id="gallery-ilustracion"></div>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <h2>Proyectos Destacados</h2>
+      
+      <div class="art-illustration-box">
+        <svg viewBox="0 0 1000 230" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vintageWave1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#d4af37" stop-opacity="0.65"/>
+              <stop offset="50%" stop-color="#7da1b0" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#c29b38" stop-opacity="0.65"/>
+            </linearGradient>
+
+            <linearGradient id="vintageWave2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#8faebc" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#e6ca65" stop-opacity="0.5"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Olas subidas un poquito más -->
+          <path d="M 0,115 Q 250,65 500,115 T 1000,95 L 1000,230 L 0,230 Z" fill="url(#vintageWave1)"/>
+          <path d="M 0,145 Q 300,100 600,150 T 1000,130 L 1000,230 L 0,230 Z" fill="url(#vintageWave2)"/>
+
+          <!-- Logo blanco integrado exclusivamente en esta sección inferior de proyectos -->
+          <image href="IMG/logo_blanco.png" x="400" y="35" width="190" height="140" filter="drop-shadow(0px 4px 10px rgba(0,0,0,0.95))" />
+
+          <text x="500" y="185" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#ffddaa" text-anchor="middle" letter-spacing="4" filter="drop-shadow(0px 3px 6px rgba(0,0,0,0.95))">
+            DISEÑO GRÁFICO & DIRECCIÓN DE ARTE
+          </text>
+        </svg>
+      </div>
+
+      <div class="info-container-bottom">
+        <h3>Proceso Creativo & Dirección de Arte</h3>
+        <p>Cada proyecto representa la búsqueda de una solución visual impecable. Mi trabajo abarca desde la conceptualización de marcas hasta la estructuración de sistemas de identidad global, cuidando la estética y la funcionalidad en cada pieza.</p>
+        <p>Desarrollo soluciones integrales en diseño editorial, dirección de arte, comunicación corporativa y proyectos multimediales, garantizando piezas con fuerte personalidad visual y alta precisión de ejecución técnica.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="floating-contact">
+    <a href="mailto:ragimeva@yahoo.com" class="contact-link">ragimeva@yahoo.com</a>
+    <a href="tel:655448787" class="contact-link">+34 655 44 87 87</a>
+  </div>
+
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <canvas id="smokeCanvas"></canvas>
+    <img id="lightboxImg" src="" alt="Foto ampliada">
+  </div>
+
+  <footer>
+    <p class="copyright">&copy; Rafael Meléndez Vallejo — Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    function switchSection(sectionId) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      
+      document.getElementById(sectionId)?.classList.add('active');
+      document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const sCanvas = document.getElementById('smokeCanvas');
+    const sCtx = sCanvas.getContext('2d');
+    let smokeParticles = [];
+
+    function resizeSmokeCanvas() {
+      sCanvas.width = window.innerWidth;
+      sCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeSmokeCanvas);
+    resizeSmokeCanvas();
+
+    class SmokeThread {
+      constructor(x, y) {
+        this.x = x; this.y = y;
+        this.size = Math.random() * 4 + 2; 
+        this.vy = -Math.random() * 1.5 - 0.5;
+        this.alpha = Math.random() * 0.4 + 0.3;
+      }
+      update() {
+        this.y += this.vy;
+        this.size += 0.2; 
+        this.alpha *= 0.95;
+      }
+      draw(ctx) {
+        if (this.alpha <= 0.01) return;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(220, 220, 225, ${this.alpha})`;
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function triggerSmokeBurst(originX, originY) {
+      smokeParticles = [];
+      for (let i = 0; i < 35; i++) {
+        smokeParticles.push(new SmokeThread(originX, originY));
+      }
+    }
+
+    function renderSmoke() {
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      for (let i = smokeParticles.length - 1; i >= 0; i--) {
+        const p = smokeParticles[i];
+        p.update();
+        p.draw(sCtx);
+        if (p.alpha <= 0.01) smokeParticles.splice(i, 1);
+      }
+      requestAnimationFrame(renderSmoke);
+    }
+    renderSmoke();
+
+    function openLightbox(src, e) {
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      lb.style.display = 'flex';
+      triggerSmokeBurst(e ? e.clientX : window.innerWidth / 2, e ? e.clientY : window.innerHeight / 2);
+      setTimeout(() => lb.classList.add('active'), 10);
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('active');
+      setTimeout(() => lb.style.display = 'none', 300);
+    }
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+    function cargarGaleriaMultiFormato(containerId, folderPath, totalFotos) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      for (let i = 1; i <= totalFotos; i++) {
+        const img = document.createElement('img');
+        img.alt = `Trabajo ${i}`;
+        img.loading = 'lazy';
+
+        const extensiones = [`${folderPath}/${i}.png`, `${folderPath}/${i}.jpg`, `${folderPath}/${i}.jpeg` ];
+        let intento = 0;
+        function probarFormato() {
+          if (intento < extensiones.length) {
+            img.src = extensiones[intento++];
+          }
+        }
+        img.onload = () => img.onclick = (e) => openLightbox(img.src, e);
+        img.onerror = () => probarFormato();
+        probarFormato();
+        container.appendChild(img);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarGaleriaMultiFormato('gallery-minimalista', 'IMG/composicion_minimalista', 12);
+      cargarGaleriaMultiFormato('gallery-tipografica', 'IMG/exploracion_tipografica', 14);
+      cargarGaleriaMultiFormato('gallery-ilustracion', 'IMG/ilustracion_digital', 16);
+    });
+
+    const cityBg = document.getElementById('cityBg');
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * -40;
+      const y = (e.clientY / window.innerHeight - 0.5) * -30;
+      cityBg.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.1)`;
+    });
+
+    const canvas = document.getElementById('lampCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 3;
+    let currentX = mouseX;
+    let currentY = mouseY;
+    let flameTime = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    function animateLantern() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flameTime += 0.08;
+
+      currentX += (mouseX - currentX) * 0.08;
+      currentY += (mouseY - currentY) * 0.08;
+
+      const logoElement = document.querySelector('.site-logo');
+      let isNearLogo = false;
+
+      if (logoElement) {
+        const logoRect = logoElement.getBoundingClientRect();
+        const logoCenterX = logoRect.left + logoRect.width / 2;
+        const logoCenterY = logoRect.top + logoRect.height / 2;
+        const distance = Math.hypot(currentX - logoCenterX, currentY - logoCenterY);
+        
+        if (distance < 200) {
+          isNearLogo = true;
+          logoElement.classList.add('illuminated');
+        } else {
+          logoElement.classList.remove('illuminated');
+        }
+      }
+
+      const gallerySection = document.getElementById('gallery');
+      const galleryViewport = document.getElementById('galleryViewport');
+      
+      if (gallerySection && gallerySection.classList.contains('active') && galleryViewport) {
+        const h = window.innerHeight;
+        if (mouseY > h * 0.65) {
+          galleryViewport.scrollTop += 10;
+        } else if (mouseY < h * 0.35) {
+          galleryViewport.scrollTop -= 10;
+        }
+      }
+
+      const originX = canvas.width / 2;
+      const originY = 0;
+
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(currentX, currentY - 32);
+      ctx.strokeStyle = 'rgba(255, 220, 170, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      const flicker = Math.sin(flameTime * 2) * 1.5 + Math.cos(flameTime * 3) * 1;
+
+      const gradRadius = isNearLogo ? 750 : 550;
+      const grad = ctx.createRadialGradient(currentX, currentY + 5, 4, currentX, currentY + 5, gradRadius);
+      
+      if (isNearLogo) {
+        grad.addColorStop(0, 'rgba(255, 240, 200, 0.75)');
+        grad.addColorStop(0.25, 'rgba(255, 210, 130, 0.4)');
+        grad.addColorStop(0.6, 'rgba(255, 170, 70, 0.15)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      } else {
+        grad.addColorStop(0, 'rgba(255, 215, 140, 0.42)');
+        grad.addColorStop(0.35, 'rgba(255, 170, 80, 0.15)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      }
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(currentX, currentY + 5, gradRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(currentX, currentY - 26, 7, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffddaa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#221a14';
+      ctx.strokeStyle = '#ffddaa';
+      ctx.lineWidth = 1.5;
+
+      ctx.beginPath();
+      ctx.moveTo(currentX - 12, currentY - 18);
+      ctx.lineTo(currentX + 12, currentY - 18);
+      ctx.lineTo(currentX + 18, currentY - 10);
+      ctx.lineTo(currentX - 18, currentY - 10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 235, 200, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(currentX - 16, currentY - 10);
+      ctx.lineTo(currentX + 16, currentY - 10);
+      ctx.lineTo(currentX + 13, currentY + 22);
+      ctx.lineTo(currentX - 13, currentY + 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(currentX - 5, currentY - 10);
+      ctx.lineTo(currentX - 4, currentY + 22);
+      ctx.moveTo(currentX + 5, currentY - 10);
+      ctx.lineTo(currentX + 4, currentY + 22);
+      ctx.strokeStyle = 'rgba(255, 221, 170, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = '#221a14';
+      ctx.beginPath();
+      ctx.roundRect(currentX - 15, currentY + 22, 30, 5, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffddaa';
+      ctx.stroke();
+
+      ctx.fillStyle = '#f0e6d2';
+      ctx.fillRect(currentX - 3.5, currentY + 8, 7, 14);
+
+      ctx.beginPath();
+      ctx.moveTo(currentX, currentY + 8);
+      ctx.lineTo(currentX, currentY + 4);
+      ctx.strokeStyle = '#333333';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(currentX + flicker * 0.3, currentY - 6);
+      ctx.quadraticCurveTo(currentX + 4 + flicker, currentY + 1, currentX, currentY + 4);
+      ctx.quadraticCurveTo(currentX - 4 + flicker, currentY + 1, currentX + flicker * 0.3, currentY - 6);
+      ctx.fillStyle = '#ff9900';
+      ctx.shadowColor = '#ffcc00';
+      ctx.shadowBlur = 12;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(currentX + flicker * 0.1, currentY + 1, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      requestAnimationFrame(animateLantern);
+    }
+    animateLantern();
+  </script>
+</body>
+</html>
